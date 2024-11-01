@@ -1,18 +1,33 @@
-import React, { useState } from 'react'
-import Nav from '../Nav/Nav'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from 'react'
 import axios from 'axios'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useState } from 'react'
 
 
-const AddUser = () => {
+const UpdateUser = () => {
 
+    const [inputs , setInputs] = useState({})
     const history = useNavigate();
-    const [inputs , setInputs] = useState({
-        name: "",
-        gmail: "",
-        age: "",
-        address: "",
-    })
+    const id = useParams().id;
+
+    useEffect(()=>{
+        const fetchHandler = async () => {
+            await axios
+            .get(`http://localhost:5000/users/${id}`)
+            .then((res)=> res.data)
+            .then((data)=> setInputs(data.user));
+        };
+        fetchHandler();
+    },[id]);
+
+    const sendRequest = async () => {
+        await axios.put(`http://localhost:5000/users/${id}`,{
+            name: String(inputs.name),
+            gmail: String(inputs.gmail),
+            age: String(inputs.age),
+            address: String(inputs.address)
+        }).then(res => res.data);
+    }
 
     const handleChange = (e) => {
         setInputs((prevState)=> ({
@@ -26,20 +41,10 @@ const AddUser = () => {
         console.log(inputs);
         sendRequest().then(()=>history('/userdetails'));
     }
-    
-    const sendRequest = async () => {
-        await axios.post('http://localhost:5000/users',{
-            name: String(inputs.name),
-            gmail: String(inputs.gmail),
-            age: String(inputs.age),
-            address: String(inputs.address)
-        }).then(res => res.data);
-    }
-    
+
   return (
     <div>
-        <Nav/>
-        <h1>Add User Page</h1>
+        <h1>Update User</h1>
         <form onSubmit={handleSubmit}>
             <label>Enter your name</label>
             <br/>
@@ -63,4 +68,4 @@ const AddUser = () => {
   )
 }
 
-export default AddUser
+export default UpdateUser
