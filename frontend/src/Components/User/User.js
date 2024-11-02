@@ -1,9 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const User = (props) => {
 
   const { _id,name,gmail,age,address } = props.user;
+
+  const history = useNavigate();
+
+  const deleteHandler = async () => {
+    await axios.delete(`http://localhost:5000/users/${_id}`)
+    .then(res => res.data)
+    .then(()=>history('/'))
+    .then(()=>history('/userdetails'))
+  }
 
   return (
     <div>
@@ -17,7 +27,7 @@ const User = (props) => {
       <Link to={`/userdetails/${_id}`}>
       Update
       </Link>
-      <button> Delete </button>
+      <button onClick={deleteHandler}> Delete </button>
     </div>
   )
 }
