@@ -27,20 +27,44 @@ const UserDetails = () => {
   })
   console.log(ComponentsRef)
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [noResults, setNoResults] = useState(false);
+
+  const handleSearch = () => {
+    fetchHandler().then((data) => {
+      const filteredUsers = data.users.filter((user) =>
+        Object.values(user).some((field) => 
+          field.toString().toLowercase().includes(searchQuery.toLowercase())
+        )
+      )
+      setUsers(filteredUsers);
+      setNoResults(filteredUsers.length === 0);
+    });
+  }
+
+
   return (
     <div>
     <Nav/>
     <h1>User Details Display Page</h1>
-    <div>
+    <input onChange={(e)=> setSearchQuery(e.target.value)}
+    type='text' name='search' placeholder='Search Users Details'></input>
+    <button onClick={handleSearch}>Search</button>
+
+    { noResults ? (
+      <div>
+        <p>No users Found</p>
+      </div>
+    ) : (
+
+    <div  ref={ComponentsRef}>
       {users && users.map((user, i ) => (
         <div key={i}>
           <User user={user} />
         </div>
       ))}
     </div>
-    <div  ref={ComponentsRef}>
-      <h1>Isuru</h1>
-    </div>
+    )}
     <button onClick={handlePrint}>Download Report</button>
     </div>
     
